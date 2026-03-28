@@ -1,0 +1,61 @@
+stages:
+  download:
+    cmd: uv run python -m src.data.download
+    params:
+      - data.num_samples
+      - data.random_seed
+    outs:
+      - data/raw/reviews.csv
+
+  prepare:
+    cmd: uv run python -m src.data.prepare
+    deps:
+      - data/raw/reviews.csv
+      - src/data/prepare.py
+    params:
+      - data.test_split
+      - data.random_seed
+    outs:
+      - data/processed/corpus.csv
+
+  featurize:
+    cmd: uv run python -m src.features.vectorize
+    deps:
+      - data/processed/corpus.csv
+      - src/features/vectorize.py
+    params:
+      - features
+    outs:
+      - data/features/X_train.npy
+      - data/features/X_test.npy
+      - data/features/y_train.npy
+      - data/features/y_test.npy
+      - data/features/vocabulary.json
+
+  train:
+    cmd: uv run python -m src.train
+    deps:
+      - data/features/X_train.npy
+      - data/features/y_train.npy
+      - src/models/network.py
+      - src/models/layers.py
+      - src/models/losses.py
+      - src/models/optimizers.py
+      - src/train.py
+    params:
+      - train
+    outs:
+      - models/model.npz
+
+  evaluate:
+    cmd: uv run python -m src.evaluate
+    deps:
+      - data/features/X_test.npy
+      - data/features/y_test.npy
+      - models/model.npz
+      - src/evaluate.py
+    params:
+      - evaluate.threshold
+    metrics:
+      - metrics/metrics.json:
+          cache: false
