@@ -1,0 +1,7 @@
+stages:
+  retrieve:
+    cmd: uv run --with scikit-learn --with pandas python retrieve.py --sklearn iris wine digits --output-dir raw
+    deps:
+      - retrieve.py
+    outs:
+      - raw

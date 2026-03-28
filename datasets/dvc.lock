@@ -1,0 +1,16 @@
+schema: '2.0'
+stages:
+  retrieve:
+    cmd: uv run --with scikit-learn --with pandas python retrieve.py --sklearn 
+      iris wine digits --output-dir raw
+    deps:
+    - path: retrieve.py
+      hash: md5
+      md5: 052d246a79202e86b680296b930160ca
+      size: 2659
+    outs:
+    - path: raw
+      hash: md5
+      md5: 7722394e90601b8386e64bc4a11e8c86.dir
+      size: 510782
+      nfiles: 4
