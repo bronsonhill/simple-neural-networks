@@ -1,0 +1,21 @@
+data:
+  num_samples: 2000
+  test_split: 0.2
+  random_seed: 42
+
+features:
+  method: "bow"
+  max_vocab_size: 5000
+  min_doc_freq: 2
+
+train:
+  hidden_layers: [64, 32]
+  activation: "relu"
+  learning_rate: 0.05
+  momentum: 0.9
+  epochs: 100
+  batch_size: 32
+  random_seed: 42
+
+evaluate:
+  threshold: 0.5

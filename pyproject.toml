@@ -1,7 +1,11 @@
 [project]
 name = "simple-neural-networks"
 version = "0.1.0"
-description = "Add your description here"
+description = "Simple neural network experiments with DVC pipelines"
 readme = "README.md"
 requires-python = ">=3.14"
-dependencies = []
+dependencies = [
+    "numpy>=2.0",
+    "dvc>=3.50",
+    "pyyaml>=6.0",
+]
