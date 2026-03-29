@@ -86,25 +86,38 @@ def load_glove(dim):
     return vocab, vectors
 
 
-def texts_to_embeddings(texts, glove_vocab, glove_vectors, pooling="mean"):
+def texts_to_embeddings(texts, glove_vocab, glove_vectors, pooling="mean",
+                        tfidf_weights=None):
     """Represent each text by pooling its word embeddings.
 
-    pooling: "mean", "max", or "sum"
+    pooling: "mean", "max", "sum", "mean+max", "mean+max+sum"
+    tfidf_weights: optional dict mapping words to TF-IDF scores for weighting
     """
     dim = glove_vectors.shape[1]
-    X = np.zeros((len(texts), dim), dtype=np.float64)
+    pool_fns = pooling.split("+")
+    X = np.zeros((len(texts), dim * len(pool_fns)), dtype=np.float64)
 
     for i, text in enumerate(texts):
         words = text.split()
-        vecs = [glove_vectors[glove_vocab[w]] for w in words if w in glove_vocab]
-        if vecs:
-            stacked = np.array(vecs)
-            if pooling == "mean":
-                X[i] = stacked.mean(axis=0)
-            elif pooling == "max":
-                X[i] = stacked.max(axis=0)
-            elif pooling == "sum":
-                X[i] = stacked.sum(axis=0)
+        matched = [(w, glove_vectors[glove_vocab[w]]) for w in words if w in glove_vocab]
+        if not matched:
+            continue
+
+        if tfidf_weights:
+            weights = np.array([tfidf_weights.get(w, 1.0) for w, _ in matched]).reshape(-1, 1)
+            stacked = np.array([v for _, v in matched]) * weights
+        else:
+            stacked = np.array([v for _, v in matched])
+
+        parts = []
+        for fn in pool_fns:
+            if fn == "mean":
+                parts.append(stacked.mean(axis=0))
+            elif fn == "max":
+                parts.append(stacked.max(axis=0))
+            elif fn == "sum":
+                parts.append(stacked.sum(axis=0))
+        X[i] = np.concatenate(parts)
 
     return X
 
@@ -127,9 +140,21 @@ def main():
     if method == "embedding":
         dim = params.get("embedding_dim", 50)
         pooling = params.get("embedding_pooling", "mean")
+        use_tfidf = params.get("embedding_tfidf", False)
         glove_vocab, glove_vectors = load_glove(dim)
-        X_train = texts_to_embeddings(train_texts, glove_vocab, glove_vectors, pooling)
-        X_test = texts_to_embeddings(test_texts, glove_vocab, glove_vectors, pooling)
+
+        tfidf_weights = None
+        if use_tfidf:
+            doc_freq = Counter()
+            for text in train_texts:
+                doc_freq.update(set(text.split()))
+            n_docs = len(train_texts)
+            tfidf_weights = {
+                w: np.log(n_docs / (df + 1)) for w, df in doc_freq.items()
+            }
+
+        X_train = texts_to_embeddings(train_texts, glove_vocab, glove_vectors, pooling, tfidf_weights)
+        X_test = texts_to_embeddings(test_texts, glove_vocab, glove_vectors, pooling, tfidf_weights)
         vocab = {w: i for i, w in enumerate(list(glove_vocab.keys())[:params["max_vocab_size"]])}
     else:
         vocab = build_vocabulary(
