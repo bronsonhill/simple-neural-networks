@@ -41,27 +41,28 @@ stages:
       size: 461263
     - path: src/features/vectorize.py
       hash: md5
-      md5: ffd67f0f7a8765df333ae8e5cb75aee7
-      size: 2470
+      md5: 9b4c191350621c6f6e5110793fcc9e70
+      size: 4922
     params:
       params.yaml:
         features:
-          method: bow
+          method: embedding
           max_vocab_size: 8000
           min_doc_freq: 1
+          embedding_dim: 50
     outs:
     - path: data/features/X_test.npy
       hash: md5
-      md5: c9642e793433226054c272d86dc8adc5
-      size: 67658328
+      md5: 1e0022cb71696c24c2710fa7efcc5e7a
+      size: 446128
     - path: data/features/X_train.npy
       hash: md5
-      md5: 2834cde651967a88ae04751d521c651d
-      size: 270572248
+      md5: cc1d2be9d7083e2ffc9d147360b1701f
+      size: 1783728
     - path: data/features/vocabulary.json
       hash: md5
-      md5: d497bae3da60c3a22876871fe30e2ada
-      size: 138268
+      md5: fceb35870e095a0ec7dcf456a9744c19
+      size: 147764
     - path: data/features/y_test.npy
       hash: md5
       md5: 84360188ab406b9a342313eb45ea3207
@@ -75,8 +76,8 @@ stages:
     deps:
     - path: data/features/X_train.npy
       hash: md5
-      md5: 2834cde651967a88ae04751d521c651d
-      size: 270572248
+      md5: cc1d2be9d7083e2ffc9d147360b1701f
+      size: 1783728
     - path: data/features/y_train.npy
       hash: md5
       md5: 1d7194ebfa4a81b3b16f022fb9aa0571
@@ -99,8 +100,8 @@ stages:
       size: 1003
     - path: src/train.py
       hash: md5
-      md5: 7f856098b760771ab078c027a94608c9
-      size: 1760
+      md5: 4b8c9861e3af73ae4745bc6e241a8b2e
+      size: 2146
     params:
       params.yaml:
         train:
@@ -113,25 +114,29 @@ stages:
           batch_size: 32
           random_seed: 42
     outs:
+    - path: metrics/train_loss.csv
+      hash: md5
+      md5: 6055271a9a1f3e7090107569d0b17f46
+      size: 1294
     - path: models/model.npz
       hash: md5
-      md5: f8eb5a05c0bde446227e893453568104
-      size: 1943254
+      md5: 8841b0839ebce0b652d338555d90e6a2
+      size: 14294
   evaluate:
     cmd: uv run python -m src.evaluate
     deps:
     - path: data/features/X_test.npy
       hash: md5
-      md5: c9642e793433226054c272d86dc8adc5
-      size: 67658328
+      md5: 1e0022cb71696c24c2710fa7efcc5e7a
+      size: 446128
     - path: data/features/y_test.npy
       hash: md5
       md5: 84360188ab406b9a342313eb45ea3207
       size: 9048
     - path: models/model.npz
       hash: md5
-      md5: f8eb5a05c0bde446227e893453568104
-      size: 1943254
+      md5: 8841b0839ebce0b652d338555d90e6a2
+      size: 14294
     - path: src/evaluate.py
       hash: md5
       md5: 55502e388f741265cde7dde45770dcc3
@@ -142,5 +147,5 @@ stages:
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: 3fb96afbc20d946b86fd4fc3d52d8f7c
+      md5: 22bfb9e209e169dd9da0907e26c17b3e
       size: 112

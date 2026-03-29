@@ -45,6 +45,10 @@ stages:
       - train
     outs:
       - models/model.npz
+    plots:
+      - metrics/train_loss.csv:
+          x: epoch
+          y: train_loss
 
   evaluate:
     cmd: uv run python -m src.evaluate
