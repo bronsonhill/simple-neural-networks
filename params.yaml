@@ -1,5 +1,4 @@
 data:
-  num_samples: 2000
   test_split: 0.2
   random_seed: 42
 
