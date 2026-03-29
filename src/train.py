@@ -1,5 +1,8 @@
 """Stage 4: Train the feedforward neural network."""
 
+import csv
+import os
+
 import numpy as np
 import yaml
 
@@ -27,6 +30,9 @@ def main():
     n = X_train.shape[0]
     batch_size = params["batch_size"]
 
+    os.makedirs("metrics", exist_ok=True)
+    loss_log = []
+
     for epoch in range(1, params["epochs"] + 1):
         indices = np.arange(n)
         rng.shuffle(indices)
@@ -51,7 +57,14 @@ def main():
             epoch_loss += loss
             n_batches += 1
 
-        print(f"Epoch {epoch}/{params['epochs']}  loss={epoch_loss / n_batches:.4f}")
+        avg_loss = epoch_loss / n_batches
+        loss_log.append({"epoch": epoch, "train_loss": round(avg_loss, 6)})
+        print(f"Epoch {epoch}/{params['epochs']}  loss={avg_loss:.4f}")
+
+    with open("metrics/train_loss.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["epoch", "train_loss"])
+        writer.writeheader()
+        writer.writerows(loss_log)
 
     net.save("models/model.npz")
     print("Model saved -> models/model.npz")

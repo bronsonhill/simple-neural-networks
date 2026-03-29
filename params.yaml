@@ -3,9 +3,11 @@ data:
   random_seed: 42
 
 features:
-  method: "bow"
+  method: "embedding"
   max_vocab_size: 8000
   min_doc_freq: 1
+  embedding_dim: 50
+  embedding_pooling: "mean"
 
 train:
   hidden_layers: [32]

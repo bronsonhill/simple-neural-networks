@@ -1,7 +1,7 @@
 {
-  "accuracy": 0.9848,
-  "precision": 0.9615,
-  "recall": 0.9124,
-  "f1_score": 0.9363,
-  "test_loss": 0.0584
+  "accuracy": 0.9417,
+  "precision": 0.7812,
+  "recall": 0.7299,
+  "f1_score": 0.7547,
+  "test_loss": 0.1413
 }
