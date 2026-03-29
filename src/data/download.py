@@ -1,68 +1,40 @@
-"""Stage 1: Generate a synthetic sentiment dataset."""
+"""Stage 1: Download the SMS Spam Collection dataset from UCI."""
 
 import csv
+import io
 import os
-
-import numpy as np
-import yaml
-
-
-POSITIVE_PHRASES = [
-    "great movie", "loved it", "excellent film", "wonderful story",
-    "amazing acting", "highly recommend", "beautiful cinematography",
-    "perfect ending", "brilliant performance", "very enjoyable",
-    "fantastic plot", "superb direction", "heartwarming tale",
-    "outstanding cast", "must watch", "truly inspiring",
-]
-
-NEGATIVE_PHRASES = [
-    "terrible movie", "waste of time", "boring film", "awful story",
-    "bad acting", "do not recommend", "poor cinematography",
-    "horrible ending", "weak performance", "very disappointing",
-    "predictable plot", "terrible direction", "depressing mess",
-    "awful cast", "avoid this", "truly awful",
-]
-
-FILLER_WORDS = [
-    "the", "a", "this", "that", "really", "very", "so", "quite",
-    "absolutely", "just", "was", "is", "it", "i", "we", "they",
-    "think", "felt", "movie", "film", "story", "watched", "saw",
-]
+import zipfile
+from urllib.request import urlretrieve
 
 
-def generate_review(rng, phrases, min_words=8, max_words=25):
-    num_phrases = rng.integers(1, 4)
-    chosen = rng.choice(len(phrases), size=num_phrases, replace=True)
-    parts = [phrases[i] for i in chosen]
-
-    target_len = rng.integers(min_words, max_words + 1)
-    while len(" ".join(parts).split()) < target_len:
-        parts.insert(
-            rng.integers(0, len(parts) + 1),
-            FILLER_WORDS[rng.integers(0, len(FILLER_WORDS))],
-        )
-
-    return " ".join(parts)
+SMS_SPAM_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/00228/smsspamcollection.zip"
 
 
 def main():
-    with open("params.yaml") as f:
-        params = yaml.safe_load(f)["data"]
-
-    rng = np.random.default_rng(params["random_seed"])
-    num_samples = params["num_samples"]
-
     os.makedirs("data/raw", exist_ok=True)
+
+    zip_path = "data/raw/smsspamcollection.zip"
+    print(f"Downloading SMS Spam Collection from UCI...")
+    urlretrieve(SMS_SPAM_URL, zip_path)
+
+    with zipfile.ZipFile(zip_path) as zf:
+        with zf.open("SMSSpamCollection") as raw:
+            lines = io.TextIOWrapper(raw, encoding="utf-8").readlines()
 
     with open("data/raw/reviews.csv", "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["text", "label"])
 
-        for _ in range(num_samples // 2):
-            writer.writerow([generate_review(rng, POSITIVE_PHRASES), 1])
-            writer.writerow([generate_review(rng, NEGATIVE_PHRASES), 0])
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            label_str, text = line.split("\t", 1)
+            label = 1 if label_str == "spam" else 0
+            writer.writerow([text, label])
 
-    print(f"Generated {num_samples} reviews -> data/raw/reviews.csv")
+    os.remove(zip_path)
+    print(f"Wrote {len(lines)} messages -> data/raw/reviews.csv")
 
 
 if __name__ == "__main__":

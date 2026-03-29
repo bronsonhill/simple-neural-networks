@@ -1,9 +1,8 @@
 stages:
   download:
     cmd: uv run python -m src.data.download
-    params:
-      - data.num_samples
-      - data.random_seed
+    deps:
+      - src/data/download.py
     outs:
       - data/raw/reviews.csv
 
