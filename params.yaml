@@ -6,8 +6,9 @@ features:
   method: "embedding"
   max_vocab_size: 8000
   min_doc_freq: 1
-  embedding_dim: 50
-  embedding_pooling: "mean"
+  embedding_dim: 200
+  embedding_pooling: "mean+max"
+  embedding_tfidf: false
 
 train:
   hidden_layers: [32]

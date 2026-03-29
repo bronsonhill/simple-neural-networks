@@ -41,24 +41,26 @@ stages:
       size: 461263
     - path: src/features/vectorize.py
       hash: md5
-      md5: 9b4c191350621c6f6e5110793fcc9e70
-      size: 4922
+      md5: 6fb01e05e297f24f02ccf45f8743df57
+      size: 6246
     params:
       params.yaml:
         features:
           method: embedding
           max_vocab_size: 8000
           min_doc_freq: 1
-          embedding_dim: 50
+          embedding_dim: 200
+          embedding_pooling: mean+max
+          embedding_tfidf: false
     outs:
     - path: data/features/X_test.npy
       hash: md5
-      md5: 1e0022cb71696c24c2710fa7efcc5e7a
-      size: 446128
+      md5: c037256e4ec122265d13fe16e824e676
+      size: 3568128
     - path: data/features/X_train.npy
       hash: md5
-      md5: cc1d2be9d7083e2ffc9d147360b1701f
-      size: 1783728
+      md5: 0b7a2cc2ce5d917c979f64b15334132e
+      size: 14268928
     - path: data/features/vocabulary.json
       hash: md5
       md5: fceb35870e095a0ec7dcf456a9744c19
@@ -76,8 +78,8 @@ stages:
     deps:
     - path: data/features/X_train.npy
       hash: md5
-      md5: cc1d2be9d7083e2ffc9d147360b1701f
-      size: 1783728
+      md5: 0b7a2cc2ce5d917c979f64b15334132e
+      size: 14268928
     - path: data/features/y_train.npy
       hash: md5
       md5: 1d7194ebfa4a81b3b16f022fb9aa0571
@@ -116,27 +118,27 @@ stages:
     outs:
     - path: metrics/train_loss.csv
       hash: md5
-      md5: 6055271a9a1f3e7090107569d0b17f46
-      size: 1294
+      md5: ac446487463483b86b1c6c60f6e7fd04
+      size: 1298
     - path: models/model.npz
       hash: md5
-      md5: 8841b0839ebce0b652d338555d90e6a2
-      size: 14294
+      md5: 373100470ee3ddb70b700e6ef97e51f0
+      size: 103894
   evaluate:
     cmd: uv run python -m src.evaluate
     deps:
     - path: data/features/X_test.npy
       hash: md5
-      md5: 1e0022cb71696c24c2710fa7efcc5e7a
-      size: 446128
+      md5: c037256e4ec122265d13fe16e824e676
+      size: 3568128
     - path: data/features/y_test.npy
       hash: md5
       md5: 84360188ab406b9a342313eb45ea3207
       size: 9048
     - path: models/model.npz
       hash: md5
-      md5: 8841b0839ebce0b652d338555d90e6a2
-      size: 14294
+      md5: 373100470ee3ddb70b700e6ef97e51f0
+      size: 103894
     - path: src/evaluate.py
       hash: md5
       md5: 55502e388f741265cde7dde45770dcc3
@@ -147,5 +149,5 @@ stages:
     outs:
     - path: metrics/metrics.json
       hash: md5
-      md5: 22bfb9e209e169dd9da0907e26c17b3e
-      size: 112
+      md5: e2c78cecc835d272f4ab0f40fed246e1
+      size: 111
