@@ -4,11 +4,11 @@ data:
 
 features:
   method: "bow"
-  max_vocab_size: 5000
-  min_doc_freq: 2
+  max_vocab_size: 8000
+  min_doc_freq: 1
 
 train:
-  hidden_layers: [64, 32]
+  hidden_layers: [32]
   activation: "relu"
   learning_rate: 0.05
   momentum: 0.9
